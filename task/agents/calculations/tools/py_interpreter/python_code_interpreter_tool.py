@@ -6,6 +6,7 @@ from aidial_client import Dial
 from aidial_sdk.chat_completion import Message, Attachment
 from pydantic import StrictStr, AnyUrl
 
+from task.utils.constants import DIAL_API_KEY
 from task.tools.base_tool import BaseTool
 from task.agents.calculations.tools.py_interpreter._response import _ExecutionResult
 from task.tools.mcp.mcp_client import MCPClient
@@ -91,9 +92,9 @@ class PythonCodeInterpreterTool(BaseTool):
         if execution_result.files:
             dial_client = Dial(
                 base_url=self.dial_endpoint,
-                api_key=tool_call_params.api_key,
+                api_key=DIAL_API_KEY,
             )
-            files_home = dial_client.my_appdata_home()
+            files_home = dial_client.my_files_home()
 
             for file in execution_result.files:
                 name = file.name
@@ -106,7 +107,7 @@ class PythonCodeInterpreterTool(BaseTool):
                 else:
                     file_data = base64.b64decode(resource)
 
-                url = f"files/{(files_home / name).as_posix()}"
+                url = (files_home / name).as_posix()
                 print(url)
 
                 dial_client.files.upload(url=url, file=file_data)

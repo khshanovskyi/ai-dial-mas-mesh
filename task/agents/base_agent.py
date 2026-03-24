@@ -7,7 +7,7 @@ from aidial_sdk.chat_completion import Message, Role, Choice, Request, Response,
 
 from task.tools.base_tool import BaseTool
 from task.tools.models import ToolCallParams
-from task.utils.constants import TOOL_CALL_HISTORY_KEY
+from task.utils.constants import TOOL_CALL_HISTORY_KEY, LLM_ENDPOINT, LLM_API_KEY
 from task.utils.history import unpack_messages
 from task.utils.stage import StageProcessor
 
@@ -39,8 +39,8 @@ class BaseAgent:
             response: Response
     ) -> Message:
         client: AsyncDial = AsyncDial(
-            base_url=self.endpoint,
-            api_key=request.api_key,
+            base_url=LLM_ENDPOINT,
+            api_key=LLM_API_KEY,
             api_version='2025-01-01-preview'
         )
 
@@ -84,7 +84,7 @@ class BaseAgent:
                     tool_call=tool_call,
                     choice=choice,
                     request=request,
-                    conversation_id=request.headers['x-conversation-id']
+                    conversation_id=request.headers.get('x-conversation-id', '')
                 )
                 for tool_call in assistant_message.tool_calls
             ]
@@ -174,7 +174,7 @@ class BaseAgent:
         if tool_message.custom_content and tool_message.custom_content.state:
             if agent_tool_history := tool_message.custom_content.state.get(TOOL_CALL_HISTORY_KEY):
                 if self.state.get(tool_name):
-                    self.state[tool_name].extend(agent_tool_history)
+                    self.state[tool_name][TOOL_CALL_HISTORY_KEY].extend(agent_tool_history)
                 else:
                     self.state[tool_name] = {
                         TOOL_CALL_HISTORY_KEY: agent_tool_history

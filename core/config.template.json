@@ -1,0 +1,50 @@
+{
+  "routes": {},
+  "applications": {
+    "calculations-agent": {
+      "displayName": "Calculations Agent",
+      "description": "MAS Mesh Calculations Agent. Equipped with: Python Code Interpreter (via MCP), simple calculator, and peer-to-peer communication with Content Management and Web Search agents.",
+      "endpoint": "http://host.docker.internal:5001/openai/deployments/calculations-agent/chat/completions",
+      "inputAttachmentTypes": ["image/png", "image/jpeg", "application/pdf", "text/html", "text/plain", "text/csv"],
+      "forwardAuthToken": true
+    },
+    "content-management-agent": {
+      "displayName": "Content Management Agent",
+      "description": "MAS Mesh Content Management Agent. Equipped with: file content extraction, RAG semantic search, and peer-to-peer communication with Calculations and Web Search agents.",
+      "endpoint": "http://host.docker.internal:5002/openai/deployments/content-management-agent/chat/completions",
+      "inputAttachmentTypes": ["image/png", "image/jpeg", "application/pdf", "text/html", "text/plain", "text/csv"],
+      "forwardAuthToken": true
+    },
+    "web-search-agent": {
+      "displayName": "Web Search Agent",
+      "description": "MAS Mesh Web Search Agent. Equipped with: DuckDuckGo web search (via MCP), and peer-to-peer communication with Calculations and Content Management agents.",
+      "endpoint": "http://host.docker.internal:5003/openai/deployments/web-search-agent/chat/completions",
+      "inputAttachmentTypes": ["image/png", "image/jpeg", "application/pdf", "text/html", "text/plain", "text/csv"],
+      "forwardAuthToken": true
+    }
+  },
+  "models": {
+    "gpt-4o": {
+      "displayName": "GPT 4o",
+      "endpoint": "http://adapter-dial:5000/openai/deployments/gpt-4o/chat/completions",
+      "type": "chat",
+      "upstreams": [
+        {
+          "endpoint": "https://ai-proxy.lab.epam.com/openai/deployments/gpt-4o/chat/completions",
+          "key": "${DIAL_API_KEY}"
+        }
+      ]
+    }
+  },
+  "keys": {
+    "dial_api_key": {
+      "project": "TEST-PROJECT",
+      "role": "default"
+    }
+  },
+  "roles": {
+    "default": {
+      "limits": {}
+    }
+  }
+}
